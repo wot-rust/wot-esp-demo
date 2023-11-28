@@ -1,5 +1,6 @@
 # wot-esp-demo
 
+[![dependency status](https://deps.rs/repo/github/wot-rust/wot-esp-demo/status.svg)](https://deps.rs/repo/github/wot-rust/wot-esp-demo)
 [![LICENSE][license badge apache]][license apache]
 [![LICENSE][license badge mit]][license mit]
 
