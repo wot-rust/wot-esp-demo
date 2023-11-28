@@ -1,0 +1,3 @@
+[wot-esp-demo]
+wifi_ssid = "FBI Surveillance Van"
+wifi_psk = "hunter2"
