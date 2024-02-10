@@ -101,7 +101,7 @@ fn main() -> Result<()> {
     let mut server = EspHttpServer::new(&Configuration::default())?;
 
     // Serve the TD from the root
-    server.fn_handler("/", Method::Get, |request| {
+    server.fn_handler("/", Method::Get, |request| -> Result<()> {
         let json = serde_json::to_vec(&td)?;
         let mut response = request.into_ok_response()?;
         response.write_all(&json)?;
@@ -109,7 +109,7 @@ fn main() -> Result<()> {
     })?;
 
     // Redirect the Well-Known URI to / so we can leave Thing::base empty.
-    server.fn_handler("/.well-known/wot", Method::Get, |request| {
+    server.fn_handler("/.well-known/wot", Method::Get, |request| -> Result<()> {
         let mut response = request.into_response(302, None, &[("Location", "/")])?;
         response.flush()?;
         Ok(())
@@ -117,35 +117,43 @@ fn main() -> Result<()> {
 
     // TemperatureProperty
     let temp_sensor = sensor.clone();
-    server.fn_handler("/properties/temperature", Method::Get, move |request| {
-        let temp_val = temp_sensor
-            .lock()
-            .unwrap()
-            .get_measurement_result()
-            .unwrap()
-            .temperature
-            .as_degrees_celsius();
-        let json = format!("{temp_val:.2}");
-        let mut response = request.into_ok_response()?;
-        response.write_all(json.as_bytes())?;
-        Ok(())
-    })?;
+    server.fn_handler(
+        "/properties/temperature",
+        Method::Get,
+        move |request| -> Result<()> {
+            let temp_val = temp_sensor
+                .lock()
+                .unwrap()
+                .get_measurement_result()
+                .unwrap()
+                .temperature
+                .as_degrees_celsius();
+            let json = format!("{temp_val:.2}");
+            let mut response = request.into_ok_response()?;
+            response.write_all(json.as_bytes())?;
+            Ok(())
+        },
+    )?;
 
     // HumidityProperty
-    server.fn_handler("/properties/humidity", Method::Get, move |request| {
-        let humi_val = sensor
-            .lock()
-            .unwrap()
-            .get_measurement_result()
-            .unwrap()
-            .humidity
-            .as_percent();
+    server.fn_handler(
+        "/properties/humidity",
+        Method::Get,
+        move |request| -> Result<()> {
+            let humi_val = sensor
+                .lock()
+                .unwrap()
+                .get_measurement_result()
+                .unwrap()
+                .humidity
+                .as_percent();
 
-        let json = format!("{humi_val:.1}");
-        let mut response = request.into_ok_response()?;
-        response.write_all(json.as_bytes())?;
-        Ok(())
-    })?;
+            let json = format!("{humi_val:.1}");
+            let mut response = request.into_ok_response()?;
+            response.write_all(json.as_bytes())?;
+            Ok(())
+        },
+    )?;
 
     println!("Server awaiting connection");
 

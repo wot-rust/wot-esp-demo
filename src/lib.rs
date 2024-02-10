@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 /// Wifi helper from https://github.com/esp-rs/std-training
 /// Author: Sergio Gasquez <sergio.gasquez@gmail.com>
-
 use anyhow::{bail, Result};
 use esp_idf_svc::{
     eventloop::EspSystemEventLoop,
@@ -54,8 +53,8 @@ pub fn wifi(
     };
 
     wifi.set_configuration(&Configuration::Client(ClientConfiguration {
-        ssid: ssid.into(),
-        password: pass.into(),
+        ssid: ssid.try_into().unwrap(),
+        password: pass.try_into().unwrap(),
         channel,
         auth_method,
         ..Default::default()
