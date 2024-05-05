@@ -71,6 +71,7 @@ fn main() -> Result<()> {
         .finish_extend()
         .id(format!("shtc3/{device_id:#02x}"))
         .description("Example Thing exposing a shtc3 sensor")
+        .security(|builder| builder.no_sec().required().with_key("nosec_sc"))
         .property("temperature", |p| {
             p.finish_extend_data_schema()
                 .attype("TemperatureProperty")
