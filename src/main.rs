@@ -66,10 +66,14 @@ fn main() -> Result<()> {
 
     println!("Device ID SHTC3: {:#02x}", device_id);
 
+    let base_ip_address = _wifi.sta_netif().get_ip_info()?.ip;
+    let base_uri = format!("http://{}", base_ip_address);
+
     // Build the thing description
     let td = Thing::builder("shtc3")
         .finish_extend()
         .id(format!("urn:shtc3/{device_id:#02x}"))
+        .base(base_uri)
         .description("Example Thing exposing a shtc3 sensor")
         .security(|builder| builder.no_sec().required().with_key("nosec_sc"))
         .property("temperature", |p| {
