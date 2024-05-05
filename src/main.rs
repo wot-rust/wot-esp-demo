@@ -69,7 +69,7 @@ fn main() -> Result<()> {
     // Build the thing description
     let td = Thing::builder("shtc3")
         .finish_extend()
-        .id(format!("shtc3/{device_id:#02x}"))
+        .id(format!("urn:shtc3/{device_id:#02x}"))
         .description("Example Thing exposing a shtc3 sensor")
         .security(|builder| builder.no_sec().required().with_key("nosec_sc"))
         .property("temperature", |p| {
