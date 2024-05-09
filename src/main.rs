@@ -14,6 +14,7 @@ use esp_idf_svc::{
         prelude::*,
     },
     http::server::{Configuration, EspHttpServer},
+    mdns::EspMdns,
 };
 use shtcx::{self, shtc3, PowerMode};
 use std::{
@@ -159,6 +160,21 @@ fn main() -> Result<()> {
             Ok(())
         },
     )?;
+
+    let mut mdns = EspMdns::take().unwrap();
+    mdns.set_hostname("shtc3-thing").unwrap();
+    mdns.add_service(
+        Some("shtc3"),
+        "_wot",
+        "_tcp",
+        80,
+        &[
+            ("td", "/.well-known/wot"),
+            ("type", "Thing"),
+            ("scheme", "http"),
+        ],
+    )
+    .unwrap();
 
     println!("Server awaiting connection");
 
