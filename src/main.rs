@@ -7,6 +7,7 @@
 use anyhow::Result;
 use core::str;
 use embedded_svc::{http::Method, io::Write};
+use esp_idf_hal::temp_sensor::*;
 use esp_idf_svc::{
     eventloop::EspSystemEventLoop,
     hal::{
@@ -64,6 +65,10 @@ fn main() -> Result<()> {
         .unwrap()
         .start_measurement(PowerMode::NormalMode)
         .unwrap();
+
+    let cfg = TempSensorConfig::default();
+    let mut temp = TempSensorDriver::new(&cfg, peripherals.temp_sensor)?;
+    temp.enable()?;
 
     println!("Device ID SHTC3: {:#02x}", device_id);
 
@@ -127,6 +132,8 @@ fn main() -> Result<()> {
         "/properties/temperature",
         Method::Get,
         move |request| -> Result<()> {
+            let internal_temp_val = temp.get_celsius()?;
+
             let temp_val = temp_sensor
                 .lock()
                 .unwrap()
@@ -134,6 +141,7 @@ fn main() -> Result<()> {
                 .unwrap()
                 .temperature
                 .as_degrees_celsius();
+            println!("Internal {internal_temp_val}C External {temp_val}C");
             let json = format!("{temp_val:.2}");
             let mut response = request.into_ok_response()?;
             response.write_all(json.as_bytes())?;
