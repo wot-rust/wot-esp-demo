@@ -107,7 +107,7 @@ fn main() -> Result<()> {
     let mut server = EspHttpServer::new(&Configuration::default())?;
 
     // Serve the TD from the root
-    server.fn_handler("/", Method::Get, |request| -> Result<()> {
+    server.fn_handler("/", Method::Get, move |request| -> Result<()> {
         let json = serde_json::to_vec(&td)?;
         let mut response = request.into_ok_response()?;
         response.write_all(&json)?;
